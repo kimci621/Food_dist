@@ -80,23 +80,70 @@ document.addEventListener('DOMContentLoaded', () => {
       'seconds': seconds
     };
   }
- //insert new data to dom 
-  function TimerNewData(){
+  //insert new data to dom 
+  function TimerNewData() {
     let newData = timeOnPage(deadLine);
     daysDOM.innerHTML = newData.days;
     hoursDOM.innerHTML = newData.hours;
     minutesDOM.innerHTML = newData.minutes;
     secondsDOM.innerHTML = newData.seconds;
   }
- // refresh timer
-  function updateDOMTimer(whatUpdate){
+  // refresh timer
+  function updateDOMTimer(whatUpdate) {
     let update = setInterval(whatUpdate, 1000);
-    if(timeOnPage.difference <= 0){
+    if (timeOnPage.difference <= 0) {
       clearInterval(update);
     }
   }
 
   TimerNewData();
   updateDOMTimer(TimerNewData);
+  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  let modalBtn = document.querySelectorAll('.btn-modal');
+  let modalContent = document.querySelector('.modal');
+  let modalClose = document.querySelector('.modal__close');
 
+  // функция убирающая модальное окно
+  function closeModal(modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  // функция открытия модального окна
+  function openModal(modal = modalContent) {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    clearInterval(TimerModal); //обнуление  таймера если модалтное окно было активировано ранее
+  }
+  //клик пользователя
+  modalBtn.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      openModal();
+    });
+  });
+  // закрытие при клике на x
+  modalClose.addEventListener('click', () => {
+    closeModal(modalContent);
+  });
+  // закрытие при клике на фон
+  modalContent.addEventListener('click', (e) => {
+    if (e.target == modalContent) {
+      closeModal(modalContent);
+    }
+  });
+  // закрытие при активном окне с Esc клавиши
+  document.addEventListener('keydown', (e) => {
+    if (e.code == 'Escape' && modalContent.style.display == 'block') {
+      closeModal(modalContent);
+    }
+  });
+  //timer на модальное окно
+  let TimerModal = setTimeout(openModal, 5000);
+  //появление модального окна при скролле
+  function showModalInEnd() {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModal();
+      window.removeEventListener('scroll', showModalInEnd);
+    }
+  }
+  window.addEventListener('scroll', showModalInEnd);
 });

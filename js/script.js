@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Timer
   const deadLine = '2021-08-22';
-  let TimerCase = document.querySelector('.timer'),
-    daysDOM = document.getElementById('days'),
+  let daysDOM = document.getElementById('days'),
     hoursDOM = document.getElementById('hours'),
     minutesDOM = document.getElementById('minutes'),
     secondsDOM = document.getElementById('seconds');
@@ -121,12 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   // закрытие при клике на x
-  modalClose.addEventListener('click', () => {
-    closeModal(modalContent);
-  });
   // закрытие при клике на фон
   modalContent.addEventListener('click', (e) => {
-    if (e.target == modalContent) {
+    if (e.target == modalContent || e.target == modalClose) {
       closeModal(modalContent);
     }
   });
@@ -205,4 +201,92 @@ document.addEventListener('DOMContentLoaded', () => {
     430).addHTMl();
 
 
+  //Отправка данных с форм POST метод
+  const forms = document.querySelectorAll('form');
+  const messages = {
+    loading: 'icons/spinner.svg',
+    success: 'Спасибо! Скоро с вами свяжемся!',
+    error: 'Что-то пошло не так...',
+  };
+  //Вызов функции postData(form) для каждой формы в документе
+  forms.forEach((item) => {
+    postData(item);
+  });
+  //Чтобы вручную не прописывать два одинаковых обработчика, создаем функцию
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      //Сообщение для пользователя о статусе
+      let statusMessage = document.createElement('img');
+      statusMessage.src = messages.loading;
+      statusMessage.style.cssText = `
+      display: block;
+      margin: 0 auto;
+      `;
+      form.insertAdjacentElement('afterend', statusMessage);
+      // Создаем запрос
+      let request = new XMLHttpRequest();
+      //Указываем тип и путь
+      request.open('POST', 'server.php');
+      //Заголовки указывать не нужно, он выставляется в POST сам
+      // request.setRequestHeader('Content-type', 'multipart/form-data; charset=utf-8');
+
+      /*
+      ТК вручную брать форму, инпуты и их значения -> перебрать и сформировать объект из них долго и сложно
+      Есть готовое решение Объект - FormData()
+      Объекты FormData позволяют вам легко конструировать наборы пар ключ-значение,
+      представляющие поля формы и их значения, которые в дальнейшем можно отправить с помощью метода send().
+      */
+      //formData-конструктор для формы-шаблона 
+      let formData = new FormData(form);
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////
+      /*Чтобы передавать в формате  JSON нужно (до данные передовались напрямую)*/
+      //Нужен заголовок для JSON
+      request.setRequestHeader('Content-type', 'application/json');
+      //Нужно formData() поместить в JSON
+      let formDataObj = {};
+      formData.forEach(function (value, key) {
+        //каждый элемент formData поместили в formDataObj в виде key:value
+        formDataObj[key] = value;
+      });
+      //конвертация formDataObj в JSON
+      const formDataJSON = JSON.stringify(formDataObj); /*JSON.stringify() - превращает объект в JSON*/
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //отправка данных с объектом(в аргументах что именно отправлять)
+      request.send(formDataJSON);
+      //обработчик при успешной загрузке
+      request.addEventListener('load', () => {
+        if (request.status == 200) {
+          SuccesModal(messages.success);
+          statusMessage.remove();
+          form.reset(); //сброс формы после отправки
+          console.log(formDataJSON);
+        } else {
+          statusMessage.textContent = messages.error;
+          form.append(statusMessage);
+        }
+      });
+    });
+  }
+  /*
+
+  -Вместо загрузки в объекте со статусами использовать анимацию и добавить в модальное окно
+  1) Из уже готового модального окна сделать успешное окно,
+     Успешное окно должно изчезать через 3 сек
+  */
+  function SuccesModal(message) {
+    document.querySelector('.modal__content').classList.add('hide');
+    //Родительский Фон модально окна
+    openModal();
+
+    let newModal = document.createElement('div');
+    newModal.classList.add('modal__content');
+    newModal.innerHTML = `<div class="modal__title">${message}</div>`;
+    document.querySelector('.modal__dialog').append(newModal);
+    setTimeout(() => {
+      newModal.remove();
+      closeModal(modalContent);
+      document.querySelector('.modal__content').classList.remove('hide');
+    }, 3000);
+  }
 });

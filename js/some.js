@@ -28,3 +28,19 @@ User.prototype.userOut = function () {
 Ivan.userOut();
 Amir.userOut();
 Bob.userOut();
+
+//rest 
+
+class testCL {
+  constructor(arr, ...newToArr) {
+    this.arr = arr;
+    this.newToArr = newToArr;
+  }
+
+  addNew() {
+    this.arr.push(`${this.newToArr}`);
+    console.log(...this.arr);
+  }
+}
+
+new testCL(['L','A'], 'P').addNew();

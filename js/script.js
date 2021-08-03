@@ -4,29 +4,23 @@ document.addEventListener('DOMContentLoaded', () => {
     tabsArrayParent = document.querySelector('.tabheader__items'),
     tabsContent = document.querySelectorAll('.tabcontent');
 
-  // 1.
-  //функция которая скрывает все элементы и убирает дополнительный kласс у табов
+  //Hide tabs
   function hide() {
     for (let i = 0; i < tabsContent.length; i++) {
       tabsContent[i].style.display = 'none';
       tabsArray[i].classList.remove('tabheader__item_active');
     }
   }
-  // 2.
-  //функция которая показывает контент и таб по номеру, по умолчанию первые
+  //Активный таб(по умолчанию первый)
   function showActiveTab(i = 0) {
     tabsContent[i].style.display = 'block';
     tabsContent[i].classList.add('fade');
     tabsArray[i].classList.add('tabheader__item_active');
   }
-  // 3. 
-  //При клике на таб добавлять ему доп класс убирая у остальных
-  //Выводить контент с таким же номером
+  //смена активного таба по клику
   function tabChange() {
     tabsArrayParent.addEventListener('click', (event) => {
       if (event.target.classList.contains('tabheader__item')) {
-        //нужно определить номер кликнутого таба и по нему вызвать showActiveTab()
-        //если элемент == элементу клика, берем его номер и передаем функции
         tabsArray.forEach((item, index) => {
           if (event.target == item) {
             hide();
@@ -41,26 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
   showActiveTab();
   tabChange();
 
-  // Скрипты и время их выполнения, setTimeout/setInterval
-  let setTimer = setTimeout(() => {
-    alert('3 seconds left ^-^');
-  }, 3000);
-
-  let setCicleTimer = setInterval(() => {
-    alert('Its me again. 3 seconds left ^-^');
-  }, 3000);
-  //так же передается функция в свойства setTimeout(foo,3000);
-  //запуск таймера после нажатия на кнопку
-
-
-  clearInterval(setTimer);
-  clearInterval(setCicleTimer); //останавливает setTimeout();
-
-
   // Timer
   const deadLine = '2021-08-22';
-  let TimerCase = document.querySelector('.timer'),
-    daysDOM = document.getElementById('days'),
+  let daysDOM = document.getElementById('days'),
     hoursDOM = document.getElementById('hours'),
     minutesDOM = document.getElementById('minutes'),
     secondsDOM = document.getElementById('seconds');
@@ -71,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((difference / (1000 * 60)) % 60);
     const seconds = Math.floor((difference / 1000) % 60);
-    /* делим на кол-во дней и получаем в виде остатка, часы, до неполного дня*/
     return {
       'difference': difference,
       'days': days,
@@ -108,29 +84,26 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.style.display = 'none';
     document.body.style.overflow = '';
   }
-  // функция открытия модального окна
+  // активное модальное окно
   function openModal(modal = modalContent) {
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
     clearInterval(TimerModal); //обнуление  таймера если модалтное окно было активировано ранее
   }
-  //клик пользователя
+
   modalBtn.forEach((btn) => {
     btn.addEventListener('click', () => {
       openModal();
     });
   });
-  // закрытие при клике на x
-  modalClose.addEventListener('click', () => {
-    closeModal(modalContent);
-  });
-  // закрытие при клике на фон
+
+  // закрытие при клике на фон, x
   modalContent.addEventListener('click', (e) => {
-    if (e.target == modalContent) {
+    if (e.target == modalContent || e.target == modalClose) {
       closeModal(modalContent);
     }
   });
-  // закрытие при активном окне с Esc клавиши
+  // закрытие при активном окне с Esc
   document.addEventListener('keydown', (e) => {
     if (e.code == 'Escape' && modalContent.style.display == 'block') {
       closeModal(modalContent);
@@ -146,12 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   window.addEventListener('scroll', showModalInEnd);
-
-  let sliderContent = document.querySelectorAll('.offer__slide');
-  sliderContent.forEach(item => {
-    item.remove();
-  });
-  // Класс для создание карточек меню
+  // Класс карточек меню
   class MenuCard {
     constructor(parentSelector, imgSrc, imgAlt, tittle, text, price) {
       this.parentSelector = document.querySelector(parentSelector);
@@ -205,4 +173,76 @@ document.addEventListener('DOMContentLoaded', () => {
     430).addHTMl();
 
 
+  // POST forms
+  const forms = document.querySelectorAll('form');
+  const messages = {
+    loading: 'icons/spinner.svg',
+    success: 'Спасибо! Скоро с вами свяжемся!',
+    error: 'Что-то пошло не так...',
+  };
+  //перебор всех форм в документе
+  forms.forEach((item) => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      //Сообщение для пользователя о статусе
+      let statusMessage = document.createElement('img');
+      statusMessage.src = messages.loading;
+      statusMessage.style.cssText = `
+      display: block;
+      margin: 0 auto;
+      `;
+      form.insertAdjacentElement('afterend', statusMessage);
+      // Запрос
+      /*
+      Объекты FormData позволяют вам легко конструировать наборы пар ключ-значение, 
+      которые в дальнейшем можно отправить с помощью метода send().
+      */
+      let formData = new FormData(form);
+      //formData() в JSON
+      let PersonalInfo = {};
+      formData.forEach(function (value, key) {
+        PersonalInfo[key] = value;
+      });
+      // Запрос
+      fetch('server.php', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify(PersonalInfo), //объект отправки
+        })
+        .then(resolve => resolve.text())
+        .then(resolve => {
+          //модальное окно с успехом
+          SuccesModal(messages.success);
+          statusMessage.remove();
+          console.log(resolve);
+        }).catch(() => {
+          statusMessage.textContent = messages.error;
+          form.append(statusMessage);
+        }).finally(() => {
+          form.reset();
+        });
+    });
+  }
+  //модальное окно с успехом
+  function SuccesModal(message) {
+    document.querySelector('.modal__content').classList.add('hide');
+    //Родитель модального окна .modal
+    openModal();
+
+    let newModal = document.createElement('div');
+    newModal.classList.add('modal__content');
+    newModal.innerHTML = `<div class="modal__title">${message}</div>`;
+    document.querySelector('.modal__dialog').append(newModal);
+    setTimeout(() => {
+      newModal.remove();
+      closeModal(modalContent);
+      document.querySelector('.modal__content').classList.remove('hide');
+    }, 3000);
+  }
 });

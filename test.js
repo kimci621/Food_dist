@@ -32,11 +32,19 @@ foo('1-ARG', '2-ARG', '+1-Arg', '+2-Arg', '+3-Arg', '+4-Arg');
 let someObj = {
   name: 'Ivan',
   size: {
+<<<<<<< HEAD
     leg: 42,
     top: 'xxl',
     colors: {
       favorite: 'black',
       unloved: 'white'
+=======
+    leg : 42,
+    top : 'xxl',
+    colors : {
+      favorite : 'black',
+      unloved : 'white'
+>>>>>>> 7899c1cb9b0d4b4793b3d79f8f27e1f090bba504
     }
   }
 };
@@ -47,6 +55,7 @@ let copy = Object.assign(someObj);
 copy.size.colors.normal = 'green';
 console.log(someObj);
 console.log(copy);
+<<<<<<< HEAD
 /////////////////////////////////////////////////////////////////////////////////
 // Promise(resolve, reject);
 
@@ -96,3 +105,6 @@ newProm.then((resolve) => {
 }).catch(() => {
   console.log('testing reject');
 });
+=======
+/////////////////////////////////////////////////////////////////////////////////
+>>>>>>> 7899c1cb9b0d4b4793b3d79f8f27e1f090bba504

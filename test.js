@@ -1,4 +1,49 @@
 'use strict';
+// prototypes (функции-конструкторы и их экзмеляры объекта(наследники))
+
+//функция конструктор
+function User(id, name, lastname, old) {
+  this.id = id;
+  this.name = name;
+  this.lastname = lastname;
+  this.old = old;
+}
+//экземпляр объект (наследники)
+let Ivan = new User(1, 'Ivan', 'Makeev', 22);
+let Amir = new User(2, 'Amir', 'Bolshev', 19);
+let Bob = new User(3, 'Bob', 'Marley', 33);
+
+console.log(Ivan);
+console.log(Amir);
+console.log(Bob);
+
+//Получаем доступ к конструктору с помощью prototype
+console.log(`${User.prototype}- это объект функции конструктора`); // мы в консрукторе
+//добавили новый метод в конструктор
+User.prototype.userOut = function () {
+  console.log(`${this.name},${this.lastname} вышел из системы`);
+};
+
+Ivan.userOut();
+Amir.userOut();
+Bob.userOut();
+
+//rest 
+
+class testCL {
+  constructor(arr, ...newToArr) {
+    this.arr = arr;
+    this.newToArr = newToArr;
+  }
+
+  addNew() {
+    this.arr.push(`${this.newToArr}`);
+    console.log(...this.arr);
+  }
+}
+
+new testCL(['L', 'A'], 'P').addNew();
+
 /////////////////////////////////////////////////////////////////////////////////
 let someArr = ['btn', 'btn', 'btn', 'btn', 'btn', 'btn'];
 
@@ -32,19 +77,13 @@ foo('1-ARG', '2-ARG', '+1-Arg', '+2-Arg', '+3-Arg', '+4-Arg');
 let someObj = {
   name: 'Ivan',
   size: {
-<<<<<<< HEAD
     leg: 42,
     top: 'xxl',
     colors: {
       favorite: 'black',
-      unloved: 'white'
-=======
-    leg : 42,
-    top : 'xxl',
-    colors : {
-      favorite : 'black',
-      unloved : 'white'
->>>>>>> 7899c1cb9b0d4b4793b3d79f8f27e1f090bba504
+      unloved: 'white',
+      leg: 42,
+      top: 'xxl',
     }
   }
 };
@@ -55,7 +94,6 @@ let copy = Object.assign(someObj);
 copy.size.colors.normal = 'green';
 console.log(someObj);
 console.log(copy);
-<<<<<<< HEAD
 /////////////////////////////////////////////////////////////////////////////////
 // Promise(resolve, reject);
 
@@ -85,7 +123,7 @@ req.then((goods) => {
 });
 
 
-let newProm = new Promise(function (resolve, reject) {
+let promise = new Promise(function (resolve, reject) {
   setTimeout(() => {
     resolve('success!');
   }, 1000);
@@ -95,7 +133,7 @@ let newProm = new Promise(function (resolve, reject) {
   // }, 1000);
 });
 
-newProm.then((resolve) => {
+promise.then((resolve) => {
   setTimeout(() => {
     console.log('loading...');
     setTimeout(() => {
@@ -105,6 +143,45 @@ newProm.then((resolve) => {
 }).catch(() => {
   console.log('testing reject');
 });
-=======
+
 /////////////////////////////////////////////////////////////////////////////////
->>>>>>> 7899c1cb9b0d4b4793b3d79f8f27e1f090bba504
+// fetch()
+// Запрос
+let PersonalInfo = {};
+let form = 'form from document';
+fetch('server.php', { // сервер отправки(куда, откуда)
+    method: 'POST', // метод get/post
+    headers: { // заголовки для JSON
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(PersonalInfo), //объект отправки или (resolve)
+  })
+  .then(resolve => resolve.text()) //resolve-успешный ответ
+  .then(resolve => {
+    //вывод значения resolve
+    console.log(resolve);
+  }).catch(() => { // в случае ошибки
+    console.log('ошибка');
+  }).finally(() => { // выполнится в любом случае
+    form.reset();
+  });
+//catch не воспринимает 404 как ошибку, resolve выпонится в любом случае
+/////////////////////////////////////////////////////////////////////////////////
+
+let obj = {
+  lisa: 'people',
+  Jerry: 'people',
+  cat: 'animal',
+  dog: 'animal',
+};
+console.log(obj);
+
+let newobj = Object.entries(obj);
+// console.log(newobj);
+newobj = newobj.filter(item => item[1] === 'people');
+// console.log(newobj);
+newobj = newobj.map(item => item[0]);
+// console.log(newobj);
+
+let oneStringArray = Object.entries(obj).filter(item => item[1] === 'people').map(item => item[0]);
+console.log(oneStringArray);

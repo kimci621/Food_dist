@@ -1,0 +1,25 @@
+{
+  "name": "food",
+  "version": "1.0.0",
+  "description": "Food Delivery",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kimci621/Food_dist.git"
+  },
+  "keywords": [
+    "food"
+  ],
+  "author": "Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kimci621/Food_dist/issues"
+  },
+  "homepage": "https://github.com/kimci621/Food_dist#readme",
+  "devDependencies": {
+    "json-server": "^0.16.3"
+  }
+}

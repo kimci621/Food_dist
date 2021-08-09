@@ -1,4 +1,5 @@
 'use strict';
+// const { response } = require("express");
 document.addEventListener('DOMContentLoaded', () => {
   const tabsArray = document.querySelectorAll('.tabheader__item'),
     tabsArrayParent = document.querySelector('.tabheader__items'),
@@ -147,32 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
       this.parentSelector.append(div);
     }
   }
-
-  new MenuCard(
-    '.menu .container',
-    'img/tabs/vegy.jpg',
-    'vegy',
-    'Меню "Фитнес"',
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежиховощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    229).addHTMl();
-
-  new MenuCard(
-    '.menu .container',
-    'img/tabs/elite.jpg',
-    'elite',
-    'Меню "Премиум"',
-    'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-    550).addHTMl();
-
-  new MenuCard(
-    '.menu .container',
-    'img/tabs/post.jpg',
-    'post',
-    'Меню "Постное"',
-    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-    430).addHTMl();
-
-
   // POST forms
   const forms = document.querySelectorAll('form');
   const messages = {
@@ -182,10 +157,68 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   //перебор всех форм в документе
   forms.forEach((item) => {
-    postData(item);
+    bindPostData(item);
   });
 
-  function postData(form) {
+  //Функция с async/await для 'POST' fetch запроса
+  const PostData = async (serverURL, dataOut) => {
+    const response = await fetch(serverURL, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: dataOut
+    });
+    return await response.json();
+  };
+  //Функция с async/await для 'GET' fetch запроса
+  const getData = async (serverURL) => {
+    const response = await fetch(serverURL);
+    if (!response.ok) {
+      // new Error(текст); вывод ошибки с текстом 
+      throw new Error(`Could not fetch ${serverURL}, status ${response.status}`);
+      // throw - вывод, выпадание, отображение
+    }
+    return await response.json();
+  };
+
+  //карточки с товаром
+  getData('http://localhost:3000/menu')
+    .then(result => {
+      // result.forEach(item => {
+      //   new MenuCard(item.img, item.altimg, item.title, item.descr, item.price).addHTMl();
+      // });
+      // или с помощью деструктуризации объекта
+      result.forEach(({ img, altimg, title, descr, price}) => {
+        let convPrice = Math.round(price * 2.75);
+        new MenuCard('.menu .container', img, altimg, title, descr, convPrice).addHTMl();
+      });
+    });
+
+    //альтернативный метод добавления контента без классов
+    /*function createCart(item){
+      item.forEach(({ img, altimg, title, descr, price}) => {
+        const element = document.createElement('div');
+        element.classList.add('menu__item');
+        element.innerHTML = `
+        <div class="menu__item">
+        <img src="${img}" alt="${altimg}">
+        <h3 class="menu__item-subtitle">${title}</h3>
+        <div class="menu__item-descr">${descr}</div>
+        <div class="menu__item-divider"></div>
+        <div class="menu__item-price">
+            <div class="menu__item-cost">Цена:</div>
+            <div class="menu__item-total"><span>${price}</span> грн/день</div>
+        </div>
+      </div>`;
+        document.querySelector('.menu .container').append(element);
+      });
+    }
+  
+    getData('http://localhost:3000/menu')
+    .then(result => createCart(result));*/
+
+  function bindPostData(form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       //Сообщение для пользователя о статусе
@@ -201,26 +234,22 @@ document.addEventListener('DOMContentLoaded', () => {
       Объекты FormData позволяют вам легко конструировать наборы пар ключ-значение, 
       которые в дальнейшем можно отправить с помощью метода send().
       */
-      let formData = new FormData(form);
-      //formData() в JSON
-      let PersonalInfo = {};
-      formData.forEach(function (value, key) {
-        PersonalInfo[key] = value;
-      });
+      const formData = new FormData(form);
+      //Каждая formData->obj->formJSON->array->obj->JSON
+      const formJSON = JSON.stringify(Object.fromEntries(formData.entries()));
+      //formData() в JSON методом forEach
+      // let PersonalInfo = {};
+      // formData.forEach(function (value, key) {
+      //   PersonalInfo[key] = value;
+      // });
       // Запрос
-      fetch('server.php', {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json'
-          },
-          body: JSON.stringify(PersonalInfo), //объект отправки
-        })
-        .then(resolve => resolve.text())
+      PostData('http://localhost:3000/requests', formJSON)
         .then(resolve => {
+          //вывод отправленных данных в http://localhost:3000/requests
+          console.log(resolve);
           //модальное окно с успехом
           SuccesModal(messages.success);
           statusMessage.remove();
-          console.log(resolve);
         }).catch(() => {
           statusMessage.textContent = messages.error;
           form.append(statusMessage);
@@ -245,4 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.modal__content').classList.remove('hide');
     }, 3000);
   }
+
+  fetch('http://localhost:3000/menu')
+    .then(response => response.json())
+    .then(response => console.log(response));
+
 });

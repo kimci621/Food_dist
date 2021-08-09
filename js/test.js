@@ -185,3 +185,27 @@ newobj = newobj.map(item => item[0]);
 
 let oneStringArray = Object.entries(obj).filter(item => item[1] === 'people').map(item => item[0]);
 console.log(oneStringArray);
+
+const PostData = async (serverURL, method, headers, data) => {
+  const response = await fetch(serverURL, {
+    method: method,
+    headers: {
+      headers
+    },
+    body: data
+  });
+
+  return response;
+};
+
+let objtest = {
+  lisa: 'people',
+  Jerry: 'people',
+};
+let newobjtest = Object.entries(objtest);
+console.log(newobjtest);
+console.log(Object.fromEntries(newobjtest));
+
+
+//parser
+//Принимать в себя информацию с HTML-> отбирать что именно нужно-> отправлять на сервер

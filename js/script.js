@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
   //Функция с async/await для 'POST' fetch запроса
   const PostData = async (serverURL, dataOut) => {
     const response = await fetch(serverURL, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Content-type': 'application/json'
       },
@@ -277,6 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   fetch('http://localhost:3000/menu')
     .then(response => response.json())
-    .then(response => console.log(response));
+    .then(console.log('cards ok'));
 
 });

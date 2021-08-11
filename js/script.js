@@ -188,15 +188,28 @@ document.addEventListener('DOMContentLoaded', () => {
       // result.forEach(item => {
       //   new MenuCard(item.img, item.altimg, item.title, item.descr, item.price).addHTMl();
       // });
-      // или с помощью деструктуризации объекта
-      result.forEach(({ img, altimg, title, descr, price}) => {
+      // C помощью деструктуризации объекта
+      result.forEach(({
+        img,
+        altimg,
+        title,
+        descr,
+        price
+      }) => {
         let convPrice = Math.round(price * 2.75);
         new MenuCard('.menu .container', img, altimg, title, descr, convPrice).addHTMl();
       });
     });
-
-    //альтернативный метод добавления контента без классов
-    /*function createCart(item){
+  //библиотека axios 
+  // axios.get('http://localhost:3000/menu')
+  //   .then(result => result.data.forEach(({img, altimg, title, descr, price}) => {
+  //     //result в дате тк приходит объект с датой(вложенность)
+  //     let convPrice = Math.round(price * 2.75);
+  //     new MenuCard('.menu .container', img, altimg, title, descr, convPrice).addHTMl();
+  //   }));
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //альтернативный метод добавления контента без классов
+  /*function createCart(item){
       item.forEach(({ img, altimg, title, descr, price}) => {
         const element = document.createElement('div');
         element.classList.add('menu__item');
@@ -214,10 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.menu .container').append(element);
       });
     }
-  
     getData('http://localhost:3000/menu')
     .then(result => createCart(result));*/
-
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
   function bindPostData(form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -245,8 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Запрос
       PostData('http://localhost:3000/requests', formJSON)
         .then(resolve => {
-          //вывод отправленных данных в http://localhost:3000/requests
-          console.log(resolve);
+          console.log('POST ok');
           //модальное окно с успехом
           SuccesModal(messages.success);
           statusMessage.remove();
@@ -279,4 +290,117 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(console.log('cards ok'));
 
+  //slider
+  const slides = document.querySelectorAll('.offer__slide');
+  const prev = document.querySelector('.offer__slider-prev');
+  const next = document.querySelector('.offer__slider-next');
+  const counter = document.getElementById('current');
+  const total = document.getElementById('total');
+  const sliderWrapper = document.querySelector('.offer__slider-wrapper');
+  const sliderInner = document.querySelector('.offer__slider-wrapper__inner');
+  const width = window.getComputedStyle(sliderInner).width;
+  //delete px from 650px
+  const widthInt = +width.slice(0, width.length - 2);
+  let step = 0;
+  let slideNum = 1;
+  //total count of slides
+  if (slides.length > 9) {
+    total.textContent = `${slides.length}`;
+    counter.textContent = `${slideNum}`;
+  } else {
+    total.textContent = `0${slides.length}`;
+    counter.textContent = `0${slideNum}`;
+  }
+  ///////////////////////////////////////////////////////////////////////////////
+  // // slider on click without animation
+  // // show active slide call
+  // activeSlide(slideNum);
+  // // show active slide with params
+  // function activeSlide(num) {
+  //   slides.forEach(item => {
+  //     item.style.display = 'none';
+  //   });
+  //   if (num > slides.length) {
+  //     slideNum = 1;
+  //   }
+  //   if (num < 1) {
+  //     slideNum = slides.length;
+  //   }
+  //   slides[slideNum - 1].classList.add('fade');
+  //   slides[slideNum - 1].style.display = 'block';
+  // }
+  // // active slide mover
+  // function moveSlide(num) {
+  //   activeSlide(slideNum += num);
+  //   //count of slides
+  //   if (slides.length > 9) {
+  //     counter.textContent = `${slideNum}`;
+  //   } else {
+  //     counter.textContent = `0${slideNum}`;
+  //   }
+  // }
+  // // prev slide
+  // prev.addEventListener('click', () => {
+  //   moveSlide(-1);
+  // });
+  // // next slide
+  // next.addEventListener('click', () => {
+  //   moveSlide(+1);
+  // });
+  ///////////////////////////////////////////////////////////////////////////////
+  //slider карусель
+  sliderInner.style.width = slides.length * 100 + '%';
+  sliderInner.style.display = 'flex';
+  sliderWrapper.style.overflow = 'hidden';
+  sliderInner.style.transition = '0.5s all';
+
+
+  slides.forEach(slide => {
+    slide.style.width = width;
+  });
+
+  prev.addEventListener('click', () => {
+    //Прокрутка
+    if (step == 0) {
+      step = widthInt * (slides.length - 1);
+    } else {
+      step -= widthInt;
+    }
+    sliderInner.style.transform = `translateX(-${step}px)`;
+    //номер слайда
+    if (slideNum == 1) {
+      slideNum = slides.length;
+    } else {
+      slideNum--;
+    }
+    //Присвоение
+    if (slideNum < 10) {
+      counter.textContent = `0${slideNum}`;
+    } else {
+      counter.textContent = `${slideNum}`;
+    }
+
+  });
+
+  next.addEventListener('click', () => {
+    //Прокрутка
+    if (step == (widthInt * (slides.length - 1))) {
+      step = 0;
+    } else {
+      step += widthInt;
+    }
+    sliderInner.style.transform = `translateX(-${step}px)`;
+    //номер слайда
+    if (slideNum == slides.length) {
+      slideNum = 1;
+    } else {
+      slideNum++;
+    }
+    //Присвоение
+    if (slideNum < 10) {
+      counter.textContent = `0${slideNum}`;
+    } else {
+      counter.textContent = `${slideNum}`;
+    }
+  });
 });

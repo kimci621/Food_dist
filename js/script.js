@@ -287,8 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   fetch('http://localhost:3000/menu')
-    .then(response => response.json())
-    .then(console.log('cards ok'));
+    .then(response => response.json());
 
   //slider
   const slider = document.querySelector('.offer__slider');
@@ -301,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliderInner = document.querySelector('.offer__slider-wrapper__inner');
   const width = window.getComputedStyle(sliderInner).width;
   //delete px from 650px
-  const widthInt = +width.slice(0, width.length - 2);
+  const widthInt = +width.replace(/\D/g, '');
   let step = 0;
   let slideNum = 1;
   //total count of slides
@@ -458,13 +457,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     indicators.append(dot);
     dots.push(dot);
-
+    //слайды по клику на навигацию
     dots.forEach(dot => {
-      console.log('test');
       dot.addEventListener('click', (event) => {
         const slideTo = event.target.getAttribute('data-slide-to');
         slideNum = slideTo;
-        console.log(slideTo - 1);
         step = (widthInt * (slideTo - 1));
         sliderInner.style.transform = `translateX(-${step}px)`;
 
@@ -475,4 +472,91 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  //calcutor
+  const resultCalc = document.querySelector('.calculating__result');
+  let gender,
+    height, weight, age, activity;
+  //общий расчет и отображение на странице
+  function CalcData(param = gender) {
+    if (!gender || !height || !weight || !age || !activity) {
+      resultCalc.textContent = '0 Ккал';
+    } else {
+      switch (param) {
+        case 'man':
+          resultCalc.textContent = (Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * activity)) + ' Ккал';
+          break;
+        case 'woman':
+          resultCalc.textContent = (Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * activity)) + ' Ккал';
+          break;
+      }
+    }
+  }
+
+  CalcData();
+
+  // передача input.value в общий расчет
+  function inputData(selector) {
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+      switch (selector) {
+        case '#height':
+          height = +input.value;
+          break;
+        case '#weight':
+          weight = +input.value;
+          break;
+        case '#age':
+          age = +input.value;
+          break;
+      }
+      CalcData();
+    });
+  }
+
+  inputData('#height');
+  inputData('#weight');
+  inputData('#age');
+
+  //передача data-active в общий расчет
+
+  function activityData(parent) {
+    let elements = parent.querySelectorAll('.calculating__choose-item');
+    parent.addEventListener('click', (e) => {
+      if (e.target.getAttribute('data-activity')) {
+        activity = +e.target.getAttribute('data-activity');
+        elements.forEach(item => {
+          item.classList.remove('calculating__choose-item_active');
+        });
+        e.target.classList.add('calculating__choose-item_active');
+        CalcData();
+      }
+    });
+  }
+
+  activityData(document.querySelector('.calculating__choose_big'));
+
+  //передача пола пользователя в общий расчет
+
+  function genderChange(parent) {
+    let elems = parent.querySelectorAll('.calculating__choose-item');
+    parent.addEventListener('click', (e) => {
+      elems.forEach(item => {
+        item.classList.remove('calculating__choose-item_active');
+      });
+      if (e.target.id === 'man') {
+        e.target.classList.add('calculating__choose-item_active');
+        gender = 'man';
+      }
+      if (e.target.id === 'woman') {
+        e.target.classList.add('calculating__choose-item_active');
+        gender = 'woman';
+      }
+      CalcData();
+    });
+  }
+
+  genderChange(document.getElementById('gender'));
+
 });

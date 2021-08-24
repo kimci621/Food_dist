@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   tabChange();
 
   // Timer
-  const deadLine = '2021-08-22';
+  const deadLine = '2021-09-22';
   let daysDOM = document.getElementById('days'),
     hoursDOM = document.getElementById('hours'),
     minutesDOM = document.getElementById('minutes'),
@@ -475,8 +475,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //calcutor
   const resultCalc = document.querySelector('.calculating__result');
-  let gender,
-    height, weight, age, activity;
+  const storage = window.localStorage;
+  let gender, height, weight, age, activity;
+
+  if (storage.getItem('activity')) {
+    activity = storage.getItem('activity');
+  } else {
+    activity = 1.375;
+    activity = storage.setItem('activity', 1.375);
+  }
+
+  if (storage.getItem('gender')) {
+    gender = storage.getItem('gender');
+  } else {
+    gender = 'woman';
+    gender = storage.setItem('gender', 'woman');
+  }
+
+  //переключение класса активности
+  function classChanger(selector, activeClass) {
+
+    let elements = document.querySelectorAll(selector);
+
+    elements.forEach(item => {
+      item.classList.remove(activeClass);
+      if (item.getAttribute('data-activity') === storage.getItem('activity')) {
+        item.classList.add(activeClass);
+      }
+      if (item.getAttribute('id') === storage.getItem('gender')) {
+        item.classList.add(activeClass);
+      }
+    });
+  }
+
+  classChanger('#gender div', 'calculating__choose-item_active');
+  classChanger('.calculating__choose_big div', 'calculating__choose-item_active');
+
+
   //общий расчет и отображение на странице
   function CalcData(param = gender) {
     if (!gender || !height || !weight || !age || !activity) {
@@ -500,6 +535,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.querySelector(selector);
 
     input.addEventListener('input', () => {
+      //check correct data
+      if (input.value.match(/\D/g)) {
+        input.style.border = '1px solid red';
+      } else {
+        input.style.border = 'none';
+      }
+
       switch (selector) {
         case '#height':
           height = +input.value;
@@ -520,12 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
   inputData('#age');
 
   //передача data-active в общий расчет
-
   function activityData(parent) {
     let elements = parent.querySelectorAll('.calculating__choose-item');
     parent.addEventListener('click', (e) => {
       if (e.target.getAttribute('data-activity')) {
-        activity = +e.target.getAttribute('data-activity');
+        storage.setItem('activity', `${+e.target.getAttribute('data-activity')}`);
+        if (storage.getItem('activity')) {
+          activity = storage.getItem('activity');
+        } else {
+          activity = +e.target.getAttribute('data-activity');
+        }
         elements.forEach(item => {
           item.classList.remove('calculating__choose-item_active');
         });
@@ -542,6 +588,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function genderChange(parent) {
     let elems = parent.querySelectorAll('.calculating__choose-item');
     parent.addEventListener('click', (e) => {
+      storage.setItem('gender', `${e.target.getAttribute('id')}`);
+      if (storage.getItem('gender')) {
+        gender = storage.getItem('gender');
+      } else {
+        gender = 'woman';
+      }
       elems.forEach(item => {
         item.classList.remove('calculating__choose-item_active');
       });

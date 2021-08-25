@@ -1,10 +1,16 @@
-function timer() {
+function timer({
+  deadline,
+  daySelector,
+  hourSelector,
+  minuteSelector,
+  secondSelector
+}) {
   // Timer
-  const deadLine = '2021-09-22';
-  let daysDOM = document.getElementById('days'),
-    hoursDOM = document.getElementById('hours'),
-    minutesDOM = document.getElementById('minutes'),
-    secondsDOM = document.getElementById('seconds');
+  const deadLine = deadline;
+  let daysDOM = daySelector,
+    hoursDOM = hourSelector,
+    minutesDOM = minuteSelector,
+    secondsDOM = secondSelector;
 
   function timeOnPage(endTime) {
     const difference = Date.parse(endTime) - Date.parse(new Date());
@@ -40,4 +46,4 @@ function timer() {
   updateDOMTimer(TimerNewData);
 }
 
-module.exports = timer;
+export default timer;

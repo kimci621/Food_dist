@@ -1,3 +1,5 @@
+import {getData} from './services/services';
+
 function menuCard() {
   // Класс карточек меню
   class MenuCard {
@@ -28,17 +30,6 @@ function menuCard() {
     }
   }
 
-  //Функция с async/await для 'GET' fetch запроса
-  const getData = async (serverURL) => {
-    const response = await fetch(serverURL);
-    if (!response.ok) {
-      // new Error(текст); вывод ошибки с текстом 
-      throw new Error(`Could not fetch ${serverURL}, status ${response.status}`);
-      // throw - вывод, выпадание, отображение
-    }
-    return await response.json();
-  };
-
   //карточки с товаром
   getData('http://localhost:3000/menu')
     .then(result => {
@@ -62,4 +53,4 @@ function menuCard() {
     .then(response => response.json());
 }
 
-module.exports = menuCard;
+export default menuCard;

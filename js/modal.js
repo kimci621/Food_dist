@@ -1,8 +1,14 @@
-function modal() {
+import {PostData} from './services/services';
+
+function modal({
+  buttonForModal,
+  contentofModal,
+  closeButtonInModal
+}) {
   // модальное окно
-  let modalBtn = document.querySelectorAll('.btn-modal');
-  let modalContent = document.querySelector('.modal');
-  let modalClose = document.querySelector('.modal__close');
+  let modalBtn = buttonForModal;
+  let modalContent = contentofModal;
+  let modalClose = closeButtonInModal;
 
   // функция убирающая модальное окно
   function closeModal(modal) {
@@ -13,7 +19,7 @@ function modal() {
   function openModal(modal = modalContent) {
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
-    clearInterval(TimerModal); //обнуление  таймера если модалтное окно было активировано ранее
+    clearInterval(TimerModal); //обнуление  таймера если модальное окно было активировано ранее
   }
 
   modalBtn.forEach((btn) => {
@@ -35,7 +41,7 @@ function modal() {
     }
   });
   //timer на модальное окно
-  let TimerModal = setTimeout(openModal, 500000);
+  let TimerModal = setTimeout(openModal, 10000);
   //появление модального окна при скролле
   function showModalInEnd() {
     if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -112,18 +118,6 @@ function modal() {
   forms.forEach((item) => {
     bindPostData(item);
   });
-
-  //Функция с async/await для 'POST' fetch запроса
-  const PostData = async (serverURL, dataOut) => {
-    const response = await fetch(serverURL, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: dataOut
-    });
-    return await response.json();
-  };
 }
 
-module.exports = modal;
+export default modal;

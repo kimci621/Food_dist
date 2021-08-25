@@ -1,13 +1,22 @@
-function slider() {
+function slider({
+  parentSelector,
+  sliderItemSelector,
+  prevArrow,
+  nextArrow,
+  counterSelector,
+  totalCountSelector,
+  sliderWrapperSelector,
+  sliderParentSelector
+}) {
   //slider
-  const slider = document.querySelector('.offer__slider');
-  const slides = document.querySelectorAll('.offer__slide');
-  const prev = document.querySelector('.offer__slider-prev');
-  const next = document.querySelector('.offer__slider-next');
-  const counter = document.getElementById('current');
-  const total = document.getElementById('total');
-  const sliderWrapper = document.querySelector('.offer__slider-wrapper');
-  const sliderInner = document.querySelector('.offer__slider-wrapper__inner');
+  const slider = parentSelector;
+  const slides = sliderItemSelector;
+  const prev = prevArrow;
+  const next = nextArrow;
+  const counter = counterSelector;
+  const total = totalCountSelector;
+  const sliderWrapper = sliderWrapperSelector;
+  const sliderInner = sliderParentSelector;
   const width = window.getComputedStyle(sliderInner).width;
   //delete px from 650px
   const widthInt = +width.replace(/\D/g, '');
@@ -148,4 +157,4 @@ function slider() {
   }
 }
 
-module.exports = slider;
+export default slider;

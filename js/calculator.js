@@ -138,4 +138,4 @@ function calculator() {
   genderChange(document.getElementById('gender'));
 }
 
-module.exports = calculator;
+export default calculator;
